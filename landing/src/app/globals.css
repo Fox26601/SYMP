@@ -1,0 +1,200 @@
+:root {
+  --bg0: #0c0a09;
+  --bg1: #1c1410;
+  --ink: #f5efe6;
+  --muted: #b9a99a;
+  --accent: #e8a87c;
+  --accent2: #c38d9e;
+  --line: rgba(245, 239, 230, 0.14);
+  --ok: #9ad4a0;
+  --err: #f0a0a0;
+  --font-display: var(--font-display-loaded), "Times New Roman", serif;
+  --font-body: var(--font-body-loaded), "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  color: var(--ink);
+  font-family: var(--font-body);
+  background:
+    radial-gradient(1200px 700px at 10% -10%, rgba(232, 168, 124, 0.22), transparent 55%),
+    radial-gradient(900px 600px at 90% 0%, rgba(195, 141, 158, 0.18), transparent 50%),
+    linear-gradient(165deg, var(--bg0), var(--bg1) 55%, #120e0c);
+}
+
+a {
+  color: var(--accent);
+}
+
+.shell {
+  width: min(1100px, calc(100% - 2rem));
+  margin: 0 auto;
+}
+
+.hero {
+  min-height: 100vh;
+  display: grid;
+  align-content: center;
+  gap: 1.25rem;
+  padding: 4rem 0 3rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.brand {
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 8vw, 5.2rem);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  margin: 0;
+}
+
+.tagline {
+  max-width: 34rem;
+  font-size: 1.15rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+.cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+button,
+.btn {
+  appearance: none;
+  border: 1px solid transparent;
+  background: var(--accent);
+  color: #1a100c;
+  font: inherit;
+  font-weight: 600;
+  padding: 0.75rem 1.15rem;
+  border-radius: 0.35rem;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  background: transparent;
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+.countdown {
+  display: flex;
+  gap: 0.75rem;
+  align-items: baseline;
+  color: var(--muted);
+  margin: 0;
+}
+
+.countdown-value {
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+}
+
+section {
+  padding: 3.5rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+h2 {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  margin: 0 0 0.75rem;
+}
+
+.lead {
+  color: var(--muted);
+  max-width: 40rem;
+  margin: 0 0 1.5rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.65rem 0.4rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.waitlist-form,
+.seed-box {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 26rem;
+}
+
+label {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+input {
+  font: inherit;
+  color: var(--ink);
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--line);
+  border-radius: 0.35rem;
+  padding: 0.65rem 0.75rem;
+}
+
+.hp {
+  position: absolute;
+  left: -9999px;
+  opacity: 0;
+  height: 0;
+  width: 0;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.ok {
+  color: var(--ok);
+}
+
+.err {
+  color: var(--err);
+}
+
+.disclaimer {
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+footer {
+  padding: 2rem 0 3rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 640px) {
+  .hero {
+    min-height: 92vh;
+    padding-top: 3rem;
+  }
+}

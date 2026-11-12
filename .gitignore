@@ -1,0 +1,15 @@
+node_modules/
+.next/
+out/
+dist/
+.env
+.env.local
+*.db
+.data/
+contracts/out/
+contracts/cache/
+contracts/broadcast/
+payout/payout
+payout/symp-payout
+.DS_Store
+*.log
