@@ -14,3 +14,6 @@ payout/symp-payout
 .DS_Store
 *.log
 .vercel
+
+.deploy/
+*.db
