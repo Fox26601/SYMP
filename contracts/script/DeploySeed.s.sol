@@ -19,8 +19,9 @@ contract DeploySeed is Script {
         address sympAddr = vm.envAddress("SYMP_TOKEN");
         address usdcAddr = vm.envAddress("USDC_TOKEN");
         address treasury = vm.envOr("SYMP_TREASURY", msg.sender);
-        uint256 start = vm.envOr("SEED_START", SeedSale.DEFAULT_START);
-        uint256 end = vm.envOr("SEED_END", SeedSale.DEFAULT_END);
+        // Mirror SeedSale.DEFAULT_START / DEFAULT_END (2029-01-01 .. 2029-01-12 UTC).
+        uint256 start = vm.envOr("SEED_START", uint256(1_861_920_000));
+        uint256 end = vm.envOr("SEED_END", uint256(1_862_956_799));
 
         SymbolicPleasures symp = SymbolicPleasures(sympAddr);
 
