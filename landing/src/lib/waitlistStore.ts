@@ -8,6 +8,15 @@ export type WaitlistEntry = {
 };
 
 const FILE = path.join(process.cwd(), ".data", "waitlist.json");
+const BLOB_PATH = "waitlist/entries.json";
+
+function blobEnabled(): boolean {
+  return Boolean(
+    process.env.BLOB_READ_WRITE_TOKEN ||
+      process.env.BLOB_STORE_ID ||
+      (process.env.VERCEL === "1" && process.env.BLOB_STORE_ID)
+  );
+}
 
 async function readFileStore(): Promise<WaitlistEntry[]> {
   try {
@@ -24,9 +33,39 @@ async function writeFileStore(entries: WaitlistEntry[]): Promise<void> {
   await fs.writeFile(FILE, JSON.stringify(entries, null, 2));
 }
 
-/** Prefer Vercel KV when KV_REST_API_URL is set; else local JSON file. */
+async function readBlobStore(): Promise<WaitlistEntry[]> {
+  const { list, get } = await import("@vercel/blob");
+  const listed = await list({ prefix: "waitlist/", limit: 100 });
+  const hit = listed.blobs.find((b) => b.pathname === BLOB_PATH);
+  if (!hit) return [];
+  const res = await get(BLOB_PATH, { access: "private" });
+  if (!res || res.statusCode !== 200) return [];
+  const text = await new Response(res.stream).text();
+  try {
+    const parsed = JSON.parse(text);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+async function writeBlobStore(entries: WaitlistEntry[]): Promise<void> {
+  const { put } = await import("@vercel/blob");
+  await put(BLOB_PATH, JSON.stringify(entries, null, 2), {
+    access: "private",
+    contentType: "application/json",
+    addRandomSuffix: false,
+    allowOverwrite: true,
+  });
+}
+
+/**
+ * Prefer Vercel KV when KV_REST_API_* set; else Vercel Blob when connected;
+ * else local JSON (dev only — fails on serverless read-only FS).
+ */
 export async function addWaitlistEntry(entry: WaitlistEntry): Promise<"ok" | "duplicate"> {
   const email = entry.email.toLowerCase();
+
   if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
     const { kv } = await import("@vercel/kv");
     const key = `waitlist:email:${email}`;
@@ -34,6 +73,14 @@ export async function addWaitlistEntry(entry: WaitlistEntry): Promise<"ok" | "du
     if (existing) return "duplicate";
     await kv.set(key, entry);
     await kv.sadd("waitlist:emails", email);
+    return "ok";
+  }
+
+  if (blobEnabled()) {
+    const list = await readBlobStore();
+    if (list.some((e) => e.email.toLowerCase() === email)) return "duplicate";
+    list.push({ ...entry, email });
+    await writeBlobStore(list);
     return "ok";
   }
 

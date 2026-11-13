@@ -52,13 +52,18 @@ export async function POST(req: Request) {
     wallet = "";
   }
 
-  const status = await addWaitlistEntry({
-    email,
-    wallet: wallet || undefined,
-    createdAt: new Date().toISOString(),
-  });
-  if (status === "duplicate") {
-    return NextResponse.json({ ok: false, error: "duplicate" }, { status: 409 });
+  try {
+    const status = await addWaitlistEntry({
+      email,
+      wallet: wallet || undefined,
+      createdAt: new Date().toISOString(),
+    });
+    if (status === "duplicate") {
+      return NextResponse.json({ ok: false, error: "duplicate" }, { status: 409 });
+    }
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error("waitlist_store_error", err);
+    return NextResponse.json({ ok: false, error: "store_unavailable" }, { status: 503 });
   }
-  return NextResponse.json({ ok: true });
 }
