@@ -13,3 +13,4 @@ payout/payout
 payout/symp-payout
 .DS_Store
 *.log
+.vercel
