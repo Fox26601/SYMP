@@ -14,7 +14,11 @@ if [ -n "${BASESCAN_API_KEY:-}" ]; then
   VERIFY_ARGS+=(--verify --etherscan-api-key "$BASESCAN_API_KEY")
 fi
 
-forge script script/Deploy.s.sol --rpc-url "$BASE_SEPOLIA_RPC_URL" --broadcast "${VERIFY_ARGS[@]}" | tee /tmp/symp-deploy.log
+forge script script/Deploy.s.sol \
+  --rpc-url "$BASE_SEPOLIA_RPC_URL" \
+  --private-key "$PRIVATE_KEY" \
+  --broadcast \
+  "${VERIFY_ARGS[@]}" | tee /tmp/symp-deploy.log
 
 # Best-effort parse token address from broadcast; operator may set SYMP_TOKEN manually.
 if [ -z "${SYMP_TOKEN:-}" ]; then
@@ -27,7 +31,11 @@ export SEED_START="${SEED_START:-$(date -u -d '1 minute' +%s 2>/dev/null || pyth
 export SEED_END="${SEED_END:-$(date -u -d '7 days' +%s 2>/dev/null || python3 -c 'import time;print(int(time.time())+7*86400)')}"
 export SYMP_TOKEN USDC_TOKEN
 
-forge script script/DeploySeed.s.sol --rpc-url "$BASE_SEPOLIA_RPC_URL" --broadcast "${VERIFY_ARGS[@]}" | tee /tmp/symp-seed.log
+forge script script/DeploySeed.s.sol \
+  --rpc-url "$BASE_SEPOLIA_RPC_URL" \
+  --private-key "$PRIVATE_KEY" \
+  --broadcast \
+  "${VERIFY_ARGS[@]}" | tee /tmp/symp-seed.log
 if [ -z "${SEED_SALE:-}" ]; then
   SEED_SALE="$(rg -o 'SeedSale\s+(0x[a-fA-F0-9]+)' /tmp/symp-seed.log -r '$1' | tail -1 || true)"
 fi
