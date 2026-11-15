@@ -15,12 +15,15 @@ fi
 : "${NEXT_PUBLIC_SEED_START:?}"
 : "${NEXT_PUBLIC_SEED_END:?}"
 
-cd "$ROOT/landing"
-npx --yes vercel@latest link --yes --token "$VERCEL_TOKEN" || true
+# Link the monorepo root to the existing Vercel project (Root Directory=landing).
+# Bare `vercel link` from landing/ creates a new "landing" project and misses symp.
+VERCEL_PROJECT="${VERCEL_PROJECT:-symp}"
+cd "$ROOT"
+npx --yes vercel@latest link --yes --project "$VERCEL_PROJECT" --token "$VERCEL_TOKEN" || true
 
 set_preview() {
   local key="$1" val="$2"
-  echo "Setting Preview $key"
+  echo "Setting Preview $key on $VERCEL_PROJECT"
   printf '%s' "$val" | npx --yes vercel@latest env add "$key" preview --token "$VERCEL_TOKEN" --force || \
     printf '%s' "$val" | npx --yes vercel@latest env add "$key" preview --token "$VERCEL_TOKEN" || true
 }
