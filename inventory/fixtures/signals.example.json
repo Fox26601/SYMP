@@ -1,0 +1,14 @@
+{
+  "pool_depth_usd": "3500",
+  "spot_vs_twap_bps": 40,
+  "volume_1h_usd": "1200",
+  "volume_24h_usd": "8500",
+  "net_creator_sell_usd_24h": "400",
+  "treasury_free_symp": "5000000",
+  "envelope_remaining_symp": "100000",
+  "envelope_remaining_usdc": "5000",
+  "released_today_symp": "0",
+  "released_week_symp": "0",
+  "kill_switch": false,
+  "oracle_ok": true
+}

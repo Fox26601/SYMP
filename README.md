@@ -10,6 +10,7 @@ Side project: ERC-20 on **Base**, seed sale **1–12 Jan 2029 UTC**, Vercel land
 contracts/   Foundry — SymbolicPleasures, SeedSale, CreatePool
 landing/     Next.js — pitch, tokenomics, waitlist, seed UI → Vercel
 payout/      Go — HMAC API, Uniswap swap payouts
+inventory/   Go — treasury inventory policy dry-run (not C′ payout)
 docs/        Tokenomics, runbooks, HornyFans API
 ```
 
@@ -69,6 +70,7 @@ See `.env.example` and `docs/HORNYFANS_API.md`.
 - `docs/RUNBOOK.md` — waitlist → seed → pool → payout
 - `docs/TESTNET.md` — Base Sepolia deploy + contribute smoke
 - `docs/HORNYFANS_API.md` — HMAC payout API for HornyFans
+- `docs/INVENTORY_POLICY.md` — treasury inventory / TWAP dry-run skeleton
 - `docs/LEGAL.md` — disclaimers
 
 ## GitHub
