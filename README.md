@@ -67,12 +67,22 @@ See `.env.example` and `docs/HORNYFANS_API.md`.
 ## Docs
 
 - `docs/TOKENOMICS.md` — supply buckets and seed params
-- `docs/RUNBOOK.md` — waitlist → seed → pool → payout
+- `docs/ADDRESSES.md` — Sepolia / mainnet address registry
+- `docs/RUNBOOK.md` — waitlist → seed → pool → payout (staging vs prod Fly)
 - `docs/SAFE_CUSTODY.md` — Gnosis Safe treasury + LP NFT (2-of-3 HW); Sepolia practice OK
 - `docs/TESTNET.md` — Base Sepolia deploy + contribute smoke
 - `docs/HORNYFANS_API.md` — HMAC payout API for HornyFans
 - `docs/INVENTORY_POLICY.md` — treasury inventory / TWAP dry-run skeleton
 - `docs/LEGAL.md` — disclaimers
+
+## Promote / check
+
+```bash
+make check                     # Sepolia readiness
+make gate-demo                 # proves mainnet refuses without CONFIRM_MAINNET=1
+make promote NETWORK=sepolia   # deploy → verify → pool → fund → Fly → HF checklist
+# mainnet: CONFIRM_MAINNET=1 required (never set in CI)
+```
 
 ## GitHub
 
