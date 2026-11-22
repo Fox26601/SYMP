@@ -12,6 +12,7 @@ contracts/cache/
 contracts/broadcast/
 payout/payout
 payout/symp-payout
+inventory/symp-inventory-dryrun
 .DS_Store
 *.log
 .vercel

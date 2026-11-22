@@ -1,0 +1,41 @@
+# SYMP treasury inventory policy (skeleton defaults).
+# Framing: treasury ops / liquidity inventory management — NOT C′ payout, NOT airdrop/pump.
+# Live numbers require Safe ceremony + operator sign-off.
+
+policy_version: "1.0.0-draft"
+execution_mode: dry_run # dry_run | live (live blocked unless SYMP_INVENTORY_ALLOW_LIVE=1)
+chain_id: 84532 # Base Sepolia default for skeleton; mainnet 8453 only after explicit go
+
+caps:
+  daily_release_symp: "50000" # human SYMP (18 decimals applied in code)
+  weekly_release_symp: "200000"
+  max_slice_symp: "5000"
+  slice_interval_sec: 300
+  max_pool_impact_bps: 25
+
+demand:
+  min_volume_1h_usd: "500"
+  min_volume_24h_usd: "2000"
+  min_twap_premium_bps: 0
+  max_twap_premium_bps: 300
+
+depth:
+  slo_usd: "10000"
+  ceiling_usd: "50000"
+  band_bps: 200
+  min_absorb_usd: "5000" # 0.5 * slo default
+
+twap_window_sec: 1800
+
+floors:
+  reserve_floor_symp: "1000000" # free treasury must stay above (after C′ reserved)
+
+envelope:
+  # Safe-approved budgets (human SYMP / USDC). Bot cannot exceed remaining.
+  symp: "100000"
+  usdc: "5000" # USDC human (6 decimals applied in code)
+
+# Hard rule: this service must never call payout HMAC / C′ transfer APIs.
+identity:
+  service: symp-inventory
+  separate_from_payout: true
