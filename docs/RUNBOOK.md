@@ -72,4 +72,13 @@ curl -sS http://127.0.0.1:8088/health
 4. Set HornyFans `TOKEN_PAYOUT_RAIL=symp` for **new** withdrawals only after pool + payout healthy.
 5. Monitor `/health`; top up USDC.
 
-See also: `docs/HORNYFANS_ACCRUAL.md`, `docs/TESTNET.md`, `docs/TOKENOMICS.md`.
+## 6. Safe custody (treasury + LP NFT)
+
+Steady-state: **Treasury Safe** holds the ~300M SYMP bucket; **LP NFT Safe** holds the Uniswap position. Policy **2-of-3** hardware wallets. Fly / transfer hot key is a **limited spender** (approve envelope), not a full-bucket EOA.
+
+1. Practice on Base Sepolia first: `./scripts/safe/create-safe-checklist.sh`
+2. Build Safe UI calldata (no broadcast): `scripts/safe/print-erc20-*.sh`
+3. Full SOP: `docs/SAFE_CUSTODY.md`
+4. **Mainnet** create/fund/large approve only after explicit operator gate («делай mainnet»).
+
+See also: `docs/HORNYFANS_ACCRUAL.md`, `docs/TESTNET.md`, `docs/TOKENOMICS.md`, `docs/SAFE_CUSTODY.md`.

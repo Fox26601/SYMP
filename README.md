@@ -67,6 +67,7 @@ See `.env.example` and `docs/HORNYFANS_API.md`.
 
 - `docs/TOKENOMICS.md` — supply buckets and seed params
 - `docs/RUNBOOK.md` — waitlist → seed → pool → payout
+- `docs/SAFE_CUSTODY.md` — Gnosis Safe treasury + LP NFT (2-of-3 HW); Sepolia practice OK
 - `docs/TESTNET.md` — Base Sepolia deploy + contribute smoke
 - `docs/HORNYFANS_API.md` — HMAC payout API for HornyFans
 - `docs/LEGAL.md` — disclaimers
