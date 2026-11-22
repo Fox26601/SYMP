@@ -32,20 +32,40 @@ Check: `./scripts/check-agent-secrets.sh`
 
 ## 3. Host `symp-payout` (Fly)
 
+### Staging vs prod Fly
+
+| | Staging | Prod |
+|---|---------|------|
+| App | `symp-payout` | `symp-payout-prod` |
+| Chain | Base Sepolia `84532` | Base mainnet `8453` |
+| Purpose | Quote/settle smoke, HF Sepolia | Live creator payouts after pool |
+| Secrets | Sepolia tokens + Uniswap Sepolia | Mainnet tokens + Uniswap Base |
+
+**Rule:** never flip staging secrets to mainnet on the same app. Create `symp-payout-prod` separately; promote with `make fly-secrets NETWORK=mainnet CONFIRM_MAINNET=1 FLY_APP=symp-payout-prod`. Scripts refuse mainnet secrets on `symp-payout` (staging).
+
+Address table: `docs/ADDRESSES.md`. Promote path: `make check` / `make promote` (mainnet gated).
+
 ```bash
 cd payout
+# Staging (Sepolia) — current default app name
 fly apps create symp-payout   # once
 fly volumes create symp_payout_data --region iad --size 1
 fly secrets set \
   HMAC_SECRET=… \
   ONCHAIN_RPC_URL=… \
-  ONCHAIN_CHAIN_ID=8453 \
+  ONCHAIN_CHAIN_ID=84532 \
   PAYOUT_PRIVATE_KEY=… \
   CALLBACK_URL=https://yoursite.com/webhooks/symp \
   SYMP_TOKEN=… USDC_TOKEN=… UNISWAP_SWAP_ROUTER=… UNISWAP_QUOTER_V2=…
 fly deploy
 curl -sS https://symp-payout.fly.dev/health
+
+# Prod (mainnet) — separate app; only after CONFIRM_MAINNET=1
+# fly apps create symp-payout-prod
+# make fly-secrets NETWORK=mainnet CONFIRM_MAINNET=1
 ```
+
+Or: `./scripts/fly-secrets.sh` with `NETWORK=sepolia` (default) after `.deploy/sepolia.env` exists.
 
 Share `HMAC_SECRET` with HornyFans as `SYMP_PAYOUT_HMAC_SECRET`; set `SYMP_PAYOUT_BASE_URL`.
 
@@ -58,11 +78,21 @@ curl -sS http://127.0.0.1:8088/health
 
 ## 4. Mainnet seed (owner only) — 2029
 
-1. Deploy token + SeedSale on Base with **production** timestamps (`SEED_START=1861920000`, `SEED_END=1862956799`).
-2. Verify on Basescan; update Vercel **Production** `NEXT_PUBLIC_*` addresses only (keep waitlist until window opens).
+**Gate:** every broadcast / Fly cutover script exits unless `CONFIRM_MAINNET=1`. No mainnet spend from CI alone.
+
+```bash
+make check NETWORK=mainnet          # shows gate would refuse
+make promote NETWORK=mainnet        # REFUSED without confirm
+# only when intentionally promoting:
+make promote NETWORK=mainnet CONFIRM_MAINNET=1
+```
+
+1. Deploy token + SeedSale on Base with **production** timestamps (`SEED_START=1861920000`, `SEED_END=1862956799`) via `make deploy NETWORK=mainnet CONFIRM_MAINNET=1`.
+2. Verify on Basescan (`make verify …`); update `docs/ADDRESSES.md`; then Vercel **Production** `NEXT_PUBLIC_*` (keep waitlist until window opens).
 3. After soft cap or end: `finalize`, `withdrawUSDC`, `reclaimUnsold`.
-4. `CreatePool.s.sol` near $0.001 — **double-check token0/token1** and `SQRT_PRICE_X96`.
-5. Export waitlist; UI disclaimer: settlement as available, no yield promise.
+4. `CreatePool.s.sol` near $0.001 — **double-check token0/token1** and `SQRT_PRICE_X96` (`make create-pool NETWORK=mainnet CONFIRM_MAINNET=1`).
+5. Fund buckets (`make fund …`); Fly prod secrets (`make fly-secrets …`); HF checklist (`make hf-flags`) — **do not** auto-flip `TOKEN_PAYOUT_RAIL`.
+6. Export waitlist; UI disclaimer: settlement as available, no yield promise.
 
 ## 5. Settle USD IOUs + live rail
 

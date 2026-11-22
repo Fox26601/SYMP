@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Deploy SymbolicPleasures + SeedSale on Base Sepolia. Records addresses under .deploy/sepolia.env
+# Prefer: make deploy NETWORK=sepolia  (or ./scripts/deploy-network.sh). This script stays for smoke.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"

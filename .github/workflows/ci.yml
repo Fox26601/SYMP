@@ -6,6 +6,29 @@ on:
   pull_request:
 
 jobs:
+  docs-registry:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Address registry + mainnet gate present
+        run: |
+          test -f docs/ADDRESSES.md
+          grep -q '0x94F2a91c17f61A89C758dCbc4f31670f12CEBd64' docs/ADDRESSES.md
+          grep -q 'TBD' docs/ADDRESSES.md
+          grep -q 'symp-payout-prod' docs/ADDRESSES.md
+          test -f Makefile
+          test -f scripts/lib/network.sh
+          grep -q 'CONFIRM_MAINNET' scripts/lib/network.sh
+          chmod +x scripts/*.sh
+          ./scripts/gate-demo.sh
+          # Dry probes must not broadcast
+          NETWORK=mainnet CONFIRM_MAINNET=1 SYMP_CHECK_ONLY=1 ./scripts/deploy-network.sh
+          set +e
+          NETWORK=mainnet CONFIRM_MAINNET= ./scripts/deploy-network.sh
+          rc=$?
+          set -e
+          test "$rc" -eq 2
+
   contracts:
     runs-on: ubuntu-latest
     defaults:
