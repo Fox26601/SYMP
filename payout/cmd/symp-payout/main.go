@@ -32,11 +32,12 @@ func main() {
 	}
 
 	srv := &api.Server{
-		Store:  st,
-		Chain:  ch,
-		Secret: os.Getenv("HMAC_SECRET"),
-		MaxUSD: intEnv("MAX_PAYOUT_USD", 500),
-		Daily:  intEnv("DAILY_LIMIT_USD", 2000),
+		Store:   st,
+		Chain:   ch,
+		Secret:  os.Getenv("HMAC_SECRET"),
+		MaxUSD:  intEnv("MAX_PAYOUT_USD", 500),
+		Daily:   intEnv("DAILY_LIMIT_USD", 2000),
+		Version: env("PAYOUT_VERSION", "dev"),
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
