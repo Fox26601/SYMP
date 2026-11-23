@@ -19,3 +19,4 @@ inventory/symp-inventory-dryrun
 
 .deploy/
 *.db
+payout/fly.toml

@@ -1,9 +1,9 @@
 # Address registry
 
-Canonical chain → address map for landing `NEXT_PUBLIC_*`, Fly payout secrets, and ops scripts.
+Canonical chain → address map for landing `NEXT_PUBLIC_*` and contract scripts.
 Update this file **after** Basescan verify. Do not invent mainnet addresses.
 
-**No mainnet spend from this registry alone.** Mainnet promote requires `CONFIRM_MAINNET=1` (see `Makefile` / `scripts/lib/network.sh`).
+**No mainnet spend from this registry alone.** Mainnet deploy scripts require `CONFIRM_MAINNET=1`.
 
 ## Base Sepolia (`84532`)
 
@@ -11,10 +11,10 @@ Update this file **after** Basescan verify. Do not invent mainnet addresses.
 |------|---------|-------|
 | SYMP token | `0x94F2a91c17f61A89C758dCbc4f31670f12CEBd64` | [Basescan](https://sepolia.basescan.org/address/0x94F2a91c17f61A89C758dCbc4f31670f12CEBd64) |
 | SeedSale | `0x328712acC177834a95E8F899cE693F3694200771` | [Basescan](https://sepolia.basescan.org/address/0x328712acC177834a95E8F899cE693F3694200771) |
-| USDC | `0x036CbD53842c5426634e7929541eC2318f3dCF7e` | Circle Base Sepolia USDC <!-- pragma: allowlist secret --> |
+| USDC | `[REDACTED]` | Circle Base Sepolia USDC <!-- pragma: allowlist secret --> |
 | SYMP/USDC pool (0.3%) | `0xa6d4E2e5650C03f8449433f1dF950447ABAEBb46` | Created via CreatePool smoke |
 | Deployer / recipient | `0xeD9E9fC3A1610CF4524907f86f99d443A14e5Ee9` | Ops EOA (test) |
-| Payout hot wallet | `0x56F6a3dC1E841536c171C35DeC9953a68892acfd` | Fly `PAYOUT_PRIVATE_KEY` address |
+| Payout hot wallet | `0x56F6a3dC1E841536c171C35DeC9953a68892acfd` | Limited float (test) |
 | Uniswap v3 Factory | `0x4752ba5DBc23f44D87826276BF6Fd6b1C372aD24` | Base Sepolia |
 | NonfungiblePositionManager | `0x27F971cb582BF9E50F397e4d29a5C7A34f11faA2` | Base Sepolia |
 | SwapRouter02 | `0x94cC0AaC535CCDB3C01d6787D6413C739ae12bc4` | Base Sepolia |
@@ -39,28 +39,3 @@ Local artifact (gitignored): `.deploy/sepolia.env` from `./scripts/deploy-sepoli
 | NonfungiblePositionManager | `0x03a520b32C04BF3bEEf7BEb72E919cf822Ed34f1` | Base |
 | SwapRouter02 | `0x2626664c2603336E57B271c5C0b26F421741e481` | Base |
 | QuoterV2 | `0x3d4e44Eb1374240CE5F1B871ab261CD16335B76a` | Base |
-
-## Fly apps
-
-| Env | App name | Chain | Rule |
-|-----|----------|-------|------|
-| Staging | `symp-payout` | Sepolia `84532` | Default for test; never put mainnet keys/secrets here |
-| Prod | `symp-payout-prod` | Mainnet `8453` | Create separately; promote only with `CONFIRM_MAINNET=1` |
-
-Do **not** flip staging app secrets to mainnet. See `docs/RUNBOOK.md` § Staging vs prod Fly.
-
-## HF feature flags (reference)
-
-| Flag | Staging default | Prod promote |
-|------|-----------------|--------------|
-| Accrual settle → Fly | on (Sepolia) | after mainnet pool + Fly health |
-| C′ treasury reserve (shadow) | optional | optional; on-chain transfer separate |
-| `TOKEN_PAYOUT_RAIL=symp` | **off** | **manual human flip only** — not part of auto-promote |
-
-## Promote path
-
-```text
-check → deploy → verify → CreatePool → fund buckets → fly-secrets → hf-flags
-```
-
-`make promote NETWORK=mainnet` refuses unless `CONFIRM_MAINNET=1`.

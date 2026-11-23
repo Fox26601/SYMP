@@ -10,8 +10,8 @@ Side project: ERC-20 on **Base**, seed sale **1–12 Jan 2029 UTC**, Vercel land
 contracts/   Foundry — SymbolicPleasures, SeedSale, CreatePool
 landing/     Next.js — pitch, tokenomics, waitlist, seed UI → Vercel
 payout/      Go — HMAC API, Uniswap swap payouts
-inventory/   Go — treasury inventory policy dry-run (not C′ payout)
-docs/        Tokenomics, runbooks, HornyFans API
+inventory/   Go — treasury inventory policy dry-run
+docs/        Public coin docs (tokenomics, legal, testnet, addresses)
 ```
 
 ## Quick start
@@ -52,7 +52,7 @@ go test ./...
 go run ./cmd/symp-payout
 ```
 
-See `.env.example` and `docs/HORNYFANS_API.md`.
+See `.env.example`. Hosting / Fly cutover / integrator rail ops are **not** documented in this public repo.
 
 ## Seed parameters
 
@@ -67,20 +67,15 @@ See `.env.example` and `docs/HORNYFANS_API.md`.
 ## Docs
 
 - `docs/TOKENOMICS.md` — supply buckets and seed params
-- `docs/ADDRESSES.md` — Sepolia / mainnet address registry
-- `docs/RUNBOOK.md` — waitlist → seed → pool → payout (staging vs prod Fly)
-- `docs/SAFE_CUSTODY.md` — Gnosis Safe treasury + LP NFT (2-of-3 HW); Sepolia practice OK
+- `docs/ADDRESSES.md` — Sepolia / mainnet token, pool, and Uniswap addresses
 - `docs/TESTNET.md` — Base Sepolia deploy + contribute smoke
-- `docs/HORNYFANS_API.md` — HMAC payout API for HornyFans
-- `docs/INVENTORY_POLICY.md` — treasury inventory / TWAP dry-run skeleton
 - `docs/LEGAL.md` — disclaimers
 
-## Promote / check
+## Deploy helpers
 
 ```bash
-make check                     # Sepolia readiness
+make deploy NETWORK=sepolia
 make gate-demo                 # proves mainnet refuses without CONFIRM_MAINNET=1
-make promote NETWORK=sepolia   # deploy → verify → pool → fund → Fly → HF checklist
 # mainnet: CONFIRM_MAINNET=1 required (never set in CI)
 ```
 

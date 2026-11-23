@@ -18,19 +18,24 @@ import (
 )
 
 type Server struct {
-	Store  *store.Store
-	Chain  *chain.Client
-	Secret string
-	MaxUSD int64
-	Daily  int64
+	Store     *store.Store
+	Chain     *chain.Client
+	Secret    string
+	MaxUSD    int64
+	Daily     int64
+	Version   string
+	startedAt time.Time
 }
 
 func (s *Server) Router() http.Handler {
+	if s.startedAt.IsZero() {
+		s.startedAt = time.Now().UTC()
+	}
 	r := chi.NewRouter()
 	r.Get("/health", s.health)
 	r.Get("/v1/quote", s.quote)
 	r.With(s.requireHMAC).Post("/v1/payouts", s.createPayout)
-	r.Get("/v1/payouts/{id}", s.getPayout)
+	r.With(s.requireHMAC).Get("/v1/payouts/{id}", s.getPayout)
 	return r
 }
 
@@ -42,7 +47,11 @@ func (s *Server) requireHMAC(next http.Handler) http.Handler {
 			return
 		}
 		r.Body = io.NopCloser(strings.NewReader(string(body)))
-		if s.Secret != "" && !ValidSignature(s.Secret, r.Header.Get("X-Symp-Signature"), body) {
+		if s.Secret == "" {
+			writeErr(w, 503, "hmac_not_configured")
+			return
+		}
+		if !ValidSignature(s.Secret, r.Header.Get("X-Symp-Signature"), body) {
 			writeErr(w, 401, "bad_signature")
 			return
 		}
@@ -51,17 +60,20 @@ func (s *Server) requireHMAC(next http.Handler) http.Handler {
 }
 
 func (s *Server) health(w http.ResponseWriter, r *http.Request) {
-	out := map[string]any{"ok": true}
-	if s.Chain != nil {
-		if bal, err := s.Chain.BalanceUSDC(r.Context()); err == nil {
-			out["usdc"] = bal.String()
-		}
-		if eth, err := s.Chain.BalanceETH(r.Context()); err == nil {
-			out["eth_wei"] = eth.String()
-		}
-		out["from"] = s.Chain.From.Hex()
+	version := s.Version
+	if version == "" {
+		version = "dev"
 	}
-	writeJSON(w, 200, out)
+	started := s.startedAt
+	if started.IsZero() {
+		started = time.Now().UTC()
+	}
+	writeJSON(w, 200, map[string]any{
+		"ok":      true,
+		"status":  "up",
+		"version": version,
+		"uptime_s": int64(time.Since(started).Seconds()),
+	})
 }
 
 func (s *Server) quote(w http.ResponseWriter, r *http.Request) {
